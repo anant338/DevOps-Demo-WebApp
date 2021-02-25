@@ -7,4 +7,4 @@ testing Polling
 
 Testing webhook.
 
-testing jira integration.
+testing jira integration
