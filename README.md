@@ -7,4 +7,6 @@ testing Polling
 
 Testing webhook.
 
-testing git and jira integration
+testing git and jira integration.
+
+testing git and jira integration on second story.
