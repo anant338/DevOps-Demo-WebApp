@@ -12,10 +12,13 @@
     <sonar.language>java</sonar.language>
     <sonar.login>admin</sonar.login>
     <sonar.password>password</sonar.password>
-  </properties>
-	
+  </properties>	
 	<dependencies>
-		
+		  <dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
