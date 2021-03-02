@@ -1,4 +1,4 @@
-from tomcat:8.0.20-jre8
+from tomcat:latest
 
 RUN mkdir /usr/local/tomcat/webapps/mywebapp
 
