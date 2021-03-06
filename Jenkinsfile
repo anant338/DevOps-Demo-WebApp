@@ -174,7 +174,7 @@ pipeline{
     stage('Send Deployment Info:Jira') {
                 steps {
                     jiraSendDeploymentInfo environmentId: 'PROD', environmentName: '"Production', environmentType: 'production', issueKeys: ['DEV-1'], serviceIds: [''], site: 'anant338.atlassian.net', state: 'successful'
-                    //jiraComment body: 'Jenkins Pipeline Completed', issueKey: 'DEV-1'
+                    jiraComment body: 'Jenkins Pipeline Completed', issueKey: 'DEV-1'
                     
                 }
             }
