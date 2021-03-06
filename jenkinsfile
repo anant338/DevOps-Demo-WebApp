@@ -104,7 +104,13 @@ pipeline{
         stage('Run Docker container on Test Server') {
              
             steps {
-              sh "docker -H ssh://root@18.191.150.229 run -d -p 8081:8080 anant338/webapp"
+                script {
+                try {
+              sh "docker -H ssh://root@172.31.12.84 run -d -p 8081:8080 anant338/webapp"
+                } catch(Error) {
+                    
+                }
+                }
              
             }
         }
@@ -139,8 +145,13 @@ pipeline{
      stage('Run Docker container on PROD Server') {
              
             steps {
-              sh "docker -H ssh://root@3.135.213.135 run -d -p 8081:8080 anant338/webapp"
-             
+                script {
+                try {
+              sh "docker -H ssh://root@172.31.14.237 run -d -p 8081:8080 anant338/webapp"
+                } catch(error) {
+                    
+                }
+                }
             }
         }
     stage('Sanity test and Notification') {
@@ -166,5 +177,20 @@ pipeline{
                     
                 }
             }
+            stage('Deploy to K8') {
+          steps {
+              sshagent(['Kubernetes']){
+             sh "scp -o StrictHostKeyChecking=no Deployment.yaml ubuntu@172.31.41.82:/home/ubuntu/" 
+             script
+             {
+             try {
+              sh "ssh ubuntu@172.31.41.82 kubectl apply -f ."
+             } catch(error) {
+              sh "ssh ubuntu@172.31.41.82 kubectl create -f ."   
+               }
+             }
+            } 
+          }
+      }
       }
   }
