@@ -18,7 +18,7 @@ pipeline{
         stage('Send Build Info:Jira') {
             steps {
                 jiraSendBuildInfo branch: 'DEV-1', site: 'anant338.atlassian.net'
-                //jiraComment body: 'Jenkins Pipeline Build Completed', issueKey: 'DEV-1'
+                jiraComment body: 'Jenkins Pipeline Build Completed', issueKey: 'DEV-1'
             }
         }
       stage('Code Analysis') {
@@ -123,11 +123,12 @@ pipeline{
                  }
               }
        
-               //stage('Performance Test') {
-               //     steps {
+               stage('Performance Test') {
+                    steps {
                //        blazeMeterTest credentialsId: 'fd465f9c-9c6c-498a-8a8a-78f5a82ae0cc', testId: '9014517.taurus', workspaceId: ''
-               //     }
-               //  }
+                         blazeMeterTest credentialsId: 'Blazemeter', testId: '9141249.taurus', workspaceId: '786908'
+                   }
+                }
                 stage('Slack Notification') {
                    steps {
                        slackSend channel: 'alerts', message: 'Deploy to Test was successful.'  
