@@ -23,7 +23,7 @@ pipeline{
         }
       stage('Code Analysis') {
              steps {
-               withSonarQubeEnv(credentialsId: 'Sonar-Demo', installationName: 'SonarQube') {
+               withSonarQubeEnv(credentialsId: 'SonarQube', installationName: 'SonarQube') {
                sh "${tool("SonarQube")}/bin/sonar-scanner \
                 -Dsonar.projectKey=. \
                 -Dsonar.sources=. \
@@ -106,7 +106,7 @@ pipeline{
             steps {
                 script {
                 try {
-              sh "docker -H ssh://root@172.31.12.84 run -d -p 8081:8080 anant338/webapp"
+              sh "docker -H ssh://root@172.31.39.220 run -d -p 8081:8080 anant338/webapp"
                 } catch(Error) {
                     
                 }
@@ -147,7 +147,7 @@ pipeline{
             steps {
                 script {
                 try {
-              sh "docker -H ssh://root@172.31.14.237 run -d -p 8081:8080 anant338/webapp"
+              sh "docker -H ssh://root@172.31.43.100 run -d -p 8081:8080 anant338/webapp"
                 } catch(error) {
                     
                 }
@@ -180,13 +180,13 @@ pipeline{
             stage('Deploy to K8') {
           steps {
               sshagent(['Kubernetes']){
-             sh "scp -o StrictHostKeyChecking=no Deployment.yaml ubuntu@172.31.41.82:/home/ubuntu/" 
+             sh "scp -o StrictHostKeyChecking=no Deployment.yaml ubuntu@172.31.46.190:/home/ubuntu/" 
              script
              {
              try {
-              sh "ssh ubuntu@172.31.41.82 kubectl apply -f ."
+              sh "ssh ubuntu@172.31.46.190 kubectl apply -f ."
              } catch(error) {
-              sh "ssh ubuntu@172.31.41.82 kubectl create -f ."   
+              sh "ssh ubuntu@172.31.46.190 kubectl create -f ."   
                }
              }
             } 
