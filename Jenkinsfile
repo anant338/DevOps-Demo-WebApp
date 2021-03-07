@@ -17,8 +17,8 @@ pipeline{
        }
         stage('Send Build Info:Jira') {
             steps {
-                jiraSendBuildInfo branch: 'DEV-1', site: 'anant338.atlassian.net'
-                jiraComment body: 'Jenkins Pipeline Build Completed', issueKey: 'DEV-1'
+                jiraSendBuildInfo branch: 'DEV-2', site: 'anant338.atlassian.net'
+                jiraComment body: 'Jenkins Pipeline Build Completed', issueKey: 'DEV-2'
             }
         }
       stage('Code Analysis') {
@@ -123,11 +123,11 @@ pipeline{
                  }
               }
        
-           //  stage('Performance Test') {
-           //        steps {
-           //             blazeMeterTest credentialsId: 'Blazemeter', testId: '9141486.taurus', workspaceId: '786908'
-           //        }
-           //     }
+             stage('Performance Test') {
+                   steps {
+                       blazeMeterTest credentialsId: 'Blazemeter', testId: '9141486.taurus', workspaceId: '786908'
+                   }
+                }
                 stage('Slack Notification') {
                    steps {
                        slackSend channel: 'alerts', message: 'Deploy to Test was successful.'  
@@ -172,8 +172,8 @@ pipeline{
     }
     stage('Send Deployment Info:Jira') {
                 steps {
-                    jiraSendDeploymentInfo environmentId: 'PROD', environmentName: '"Production', environmentType: 'production', issueKeys: ['DEV-1'], serviceIds: [''], site: 'anant338.atlassian.net', state: 'successful'
-                    jiraComment body: 'Jenkins Pipeline Completed', issueKey: 'DEV-1'
+                    jiraSendDeploymentInfo environmentId: 'PROD', environmentName: '"Production', environmentType: 'production', issueKeys: ['DEV-2'], serviceIds: [''], site: 'anant338.atlassian.net', state: 'successful'
+                    jiraComment body: 'Jenkins Pipeline Completed', issueKey: 'DEV-2'
                     
                 }
             }
