@@ -180,16 +180,16 @@ pipeline{
             stage('Deploy to K8') {
           steps {
               sshagent(['Kubernetes']){
-             //sh "scp -o StrictHostKeyChecking=no Deployment.yaml ubuntu@172.31.46.190:/home/ubuntu/" 
-               sh "scp -o StrictHostKeyChecking=no Deployment.yaml root@172.31.22.75:/home/ubuntu/" 
+             sh "scp -o StrictHostKeyChecking=no Deployment.yaml ubuntu@172.31.46.190:/home/ubuntu/" 
+               //sh "scp -o StrictHostKeyChecking=no Deployment.yaml root@172.31.22.75:/home/ubuntu/" 
              script
              {
              try {
-              //sh "ssh ubuntu@172.31.46.190 kubectl apply -f ."
-                sh "ssh root@172.31.22.75 kubectl apply -f /home/ubuntu/Deployment.yaml"
+                sh "ssh ubuntu@172.31.46.190 kubectl apply -f ."
+                //sh "ssh root@172.31.22.75 kubectl apply -f /home/ubuntu/Deployment.yaml"
              } catch(error) {
-              //sh "ssh ubuntu@172.31.46.190 kubectl create -f ." 
-                sh "ssh root@172.31.22.75 kubectl create -f /home/ubuntu/Deployment.yaml"
+              sh "ssh ubuntu@172.31.46.190 kubectl create -f ." 
+              //  sh "ssh root@172.31.22.75 kubectl create -f /home/ubuntu/Deployment.yaml"
                }
              }
             } 
