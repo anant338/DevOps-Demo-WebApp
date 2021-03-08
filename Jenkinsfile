@@ -36,7 +36,8 @@ pipeline{
                 }
              }
         }
-       
+       stage('Push to Artifactory & Docker') {
+           parallel {
        stage('Deploy to Artifactory') {
            steps {
                rtMavenResolver (
@@ -72,15 +73,7 @@ pipeline{
                                  )
            }
        }
-       
-       stage('Deploy to test') {
-           steps {
-               sh 'mvn package -f pom.xml' 
-               deploy adapters: [tomcat8(credentialsId: 'b4bf869a-9319-45d6-9989-edff703d9a1e', path: '', url: 'http://172.31.47.14:8080')], contextPath: '/SQ2Webapp', onFailure: false, war: '**/*.war'
-               
-             }
-       }
-     stage('Docker Build and Publish') {
+       stage('Docker Build and Publish') {
            steps {
                 sh 'mvn package -f pom.xml' 
                 withDockerRegistry([ credentialsId: "Docker", url: "" ]) {
@@ -90,17 +83,18 @@ pipeline{
             } 
           }
         }
-     
-       // stage('Publish image to Docker Hub') {
+           }
+       }
+       stage('Deploy to test Servers') {
+           parallel {
+       stage('Deploy to test') {
+           steps {
+               sh 'mvn package -f pom.xml' 
+               deploy adapters: [tomcat8(credentialsId: 'b4bf869a-9319-45d6-9989-edff703d9a1e', path: '', url: 'http://172.31.47.14:8080')], contextPath: '/SQ2Webapp', onFailure: false, war: '**/*.war'
+               
+             }
+       }
           
-       //     steps {
-       //           withDockerRegistry([ credentialsId: "Docker", url: "" ]) {
-       //          sh  'docker push anant338/webapp:latest'
-                  
-       //           }
-                  
-       //         }
-       //      }
         stage('Run Docker Image on Test Server') {
              
             steps {
@@ -114,6 +108,8 @@ pipeline{
              
             }
         }
+           }
+       }
        stage('UI Test and Notification') {
            parallel {
               stage('UI Test') {
@@ -125,7 +121,7 @@ pipeline{
        
              stage('Performance Test') {
                    steps {
-                       blazeMeterTest credentialsId: 'Blazemeter', testId: '9141486.taurus', workspaceId: '786908'
+                       blazeMeterTest credentialsId: 'Blazemeter', testId: '9148154.taurus', workspaceId: '788916'
                    }
                 }
                 stage('Slack Notification') {
@@ -135,7 +131,8 @@ pipeline{
                 }
            }
        }
-       
+       stage('Deploy to PROD Servers and K8') {
+           parallel {
      stage('Deploy to PROD') {
        steps {
               sh 'mvn clean install -f pom.xml' 
@@ -154,7 +151,26 @@ pipeline{
                 }
                 }
             }
+         stage('Deploy to K8') {
+          steps {
+              sshagent(['Kubernetes']){
+                 sh "scp -o StrictHostKeyChecking=no Deployment.yaml ubuntu@172.31.46.190:/home/ubuntu/" 
+               //sh "scp -o StrictHostKeyChecking=no Deployment.yaml root@172.31.22.75:/home/ubuntu/" 
+             script
+             {
+             try {
+                  sh "ssh ubuntu@172.31.46.190 kubectl apply -f ."
+                //sh "ssh root@172.31.22.75 kubectl apply -f /home/ubuntu/Deployment.yaml"
+             } catch(error) {
+                  sh "ssh ubuntu@172.31.46.190 kubectl create -f ." 
+              //  sh "ssh root@172.31.22.75 kubectl create -f /home/ubuntu/Deployment.yaml"
+               }
+             }
+            } 
+          }
+      }
         }
+           }
     stage('Sanity test and Notification') {
       parallel {
            stage('Sanity Test') {
@@ -178,23 +194,6 @@ pipeline{
                     
                 }
             }
-            stage('Deploy to K8') {
-          steps {
-              sshagent(['Kubernetes']){
-                 sh "scp -o StrictHostKeyChecking=no Deployment.yaml ubuntu@172.31.46.190:/home/ubuntu/" 
-               //sh "scp -o StrictHostKeyChecking=no Deployment.yaml root@172.31.22.75:/home/ubuntu/" 
-             script
-             {
-             try {
-                  sh "ssh ubuntu@172.31.46.190 kubectl apply -f ."
-                //sh "ssh root@172.31.22.75 kubectl apply -f /home/ubuntu/Deployment.yaml"
-             } catch(error) {
-                  sh "ssh ubuntu@172.31.46.190 kubectl create -f ." 
-              //  sh "ssh root@172.31.22.75 kubectl create -f /home/ubuntu/Deployment.yaml"
-               }
-             }
-            } 
-          }
-      }
+            
       }
   }
