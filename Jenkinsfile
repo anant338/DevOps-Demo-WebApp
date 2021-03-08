@@ -133,44 +133,43 @@ pipeline{
        }
        stage('Deploy to PROD Servers and K8') {
            parallel {
-     stage('Deploy to PROD') {
-       steps {
-              sh 'mvn clean install -f pom.xml' 
-              deploy adapters: [tomcat8(credentialsId: 'b4bf869a-9319-45d6-9989-edff703d9a1e', path: '', url: 'http://172.31.39.4:8080')], contextPath: '/SQ2Webapp', onFailure: false, war: '**/*.war'
-   
-       }
-       }
-     stage('Run Docker Image on PROD Server') {
-             
-            steps {
-                script {
-                try {
-              sh "docker -H ssh://root@172.31.43.100 run -d -p 8081:8080 anant338/webapp"
-                } catch(error) {
+              stage('Deploy to PROD') {
+                  steps {
+                        sh 'mvn clean install -f pom.xml' 
+                        deploy adapters: [tomcat8(credentialsId: 'b4bf869a-9319-45d6-9989-edff703d9a1e', path: '', url: 'http://172.31.39.4:8080')], contextPath: '/SQ2Webapp', onFailure: false, war: '**/*.war'
+                         }
+                      }
+             stage('Run Docker Image on PROD Server') {
+                    steps {
+                       script {
+                                 try {
+                                sh "docker -H ssh://root@172.31.43.100 run -d -p 8081:8080 anant338/webapp"
+                                } catch(error) {
                     
-                }
-                }
-            }
-         stage('Deploy to K8') {
-          steps {
-              sshagent(['Kubernetes']){
-                 sh "scp -o StrictHostKeyChecking=no Deployment.yaml ubuntu@172.31.46.190:/home/ubuntu/" 
-               //sh "scp -o StrictHostKeyChecking=no Deployment.yaml root@172.31.22.75:/home/ubuntu/" 
-             script
-             {
-             try {
-                  sh "ssh ubuntu@172.31.46.190 kubectl apply -f ."
-                //sh "ssh root@172.31.22.75 kubectl apply -f /home/ubuntu/Deployment.yaml"
-             } catch(error) {
-                  sh "ssh ubuntu@172.31.46.190 kubectl create -f ." 
-              //  sh "ssh root@172.31.22.75 kubectl create -f /home/ubuntu/Deployment.yaml"
-               }
-             }
-            } 
-          }
-      }
-        }
+                                              }
+                                           }
+                                        }
+                                     }
+          stage('Deploy to K8') {
+             steps {
+                    sshagent(['Kubernetes']){
+                    sh "scp -o StrictHostKeyChecking=no Deployment.yaml ubuntu@172.31.46.190:/home/ubuntu/" 
+                    //sh "scp -o StrictHostKeyChecking=no Deployment.yaml root@172.31.22.75:/home/ubuntu/" 
+                   script {
+                      try {
+                              sh "ssh ubuntu@172.31.46.190 kubectl apply -f ."
+                              //sh "ssh root@172.31.22.75 kubectl apply -f /home/ubuntu/Deployment.yaml"
+                         } catch(error) {
+                             sh "ssh ubuntu@172.31.46.190 kubectl create -f ." 
+                             //  sh "ssh root@172.31.22.75 kubectl create -f /home/ubuntu/Deployment.yaml"
+                           }
+                       }
+                   } 
+              }
            }
+        }
+      }
+               
     stage('Sanity test and Notification') {
       parallel {
            stage('Sanity Test') {
