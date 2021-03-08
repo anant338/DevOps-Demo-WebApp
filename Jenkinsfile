@@ -76,7 +76,7 @@ pipeline{
        stage('Deploy to test') {
            steps {
                sh 'mvn package -f pom.xml' 
-               deploy adapters: [tomcat8(credentialsId: 'b4bf869a-9319-45d6-9989-edff703d9a1e', path: '', url: 'http://172.31.39.4:8080')], contextPath: '/SQ2Webapp', onFailure: false, war: '**/*.war'
+               deploy adapters: [tomcat8(credentialsId: 'b4bf869a-9319-45d6-9989-edff703d9a1e', path: '', url: 'http://172.31.47.14:8080')], contextPath: '/SQ2Webapp', onFailure: false, war: '**/*.war'
                
              }
        }
@@ -136,12 +136,13 @@ pipeline{
            }
        }
        
-     //   stage('Deploy to PROD') {
-     //   steps {
-     //         sh 'mvn clean install -f pom.xml' 
-     //          deploy adapters: [tomcat8(credentialsId: 'b4bf869a-9319-45d6-9989-edff703d9a1e', path: '', url: 'http://3.141.167.144:8080')], contextPath: '/ProdWebapp', war: '**/*.war'
-     //      }
-     //  }
+     stage('Deploy to PROD') {
+       steps {
+              sh 'mvn clean install -f pom.xml' 
+              deploy adapters: [tomcat8(credentialsId: 'b4bf869a-9319-45d6-9989-edff703d9a1e', path: '', url: 'http://172.31.39.4:8080')], contextPath: '/SQ2Webapp', onFailure: false, war: '**/*.war'
+   
+       }
+       }
      stage('Run Docker container on PROD Server') {
              
             steps {
