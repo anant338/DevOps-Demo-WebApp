@@ -73,13 +73,13 @@ pipeline{
            }
        }
        
-      // stage('Deploy to test') {
-      //     steps {
-      //         sh 'mvn package -f pom.xml' 
-     //          deploy adapters: [tomcat8(credentialsId: 'b4bf869a-9319-45d6-9989-edff703d9a1e', path: '', url: 'http://18.217.2.193:8080')], contextPath: '/QAWebapp', onFailure: false, war: '**/*.war'
+       stage('Deploy to test') {
+           steps {
+               sh 'mvn package -f pom.xml' 
+               deploy adapters: [tomcat8(credentialsId: 'b4bf869a-9319-45d6-9989-edff703d9a1e', path: '', url: 'http://172.31.39.4:8080')], contextPath: '/SQ2Webapp', onFailure: false, war: '**/*.war'
                
-     //        }
-     //  }
+             }
+       }
      stage('Docker Build and Publish') {
            steps {
                 sh 'mvn package -f pom.xml' 
