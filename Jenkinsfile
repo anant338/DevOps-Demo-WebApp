@@ -18,7 +18,7 @@ pipeline{
         stage('Send Build Info:Jira') {
             steps {
                 jiraSendBuildInfo branch: 'DEV-2', site: 'anant338.atlassian.net'
-                jiraComment body: 'Jenkins Pipeline Build Completed', issueKey: 'DEV-2'
+                jiraComment body: 'Jenkins Pipeline Build Completed:' $BUILD_NUMBER , issueKey: 'DEV-2'
             }
         }
       stage('Code Analysis') {
