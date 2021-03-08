@@ -101,7 +101,7 @@ pipeline{
                   
        //         }
        //      }
-        stage('Run Docker container on Test Server') {
+        stage('Run Docker Image on Test Server') {
              
             steps {
                 script {
@@ -123,11 +123,11 @@ pipeline{
                  }
               }
        
-           //  stage('Performance Test') {
-          //         steps {
-         //              blazeMeterTest credentialsId: 'Blazemeter', testId: '9141486.taurus', workspaceId: '786908'
-         //          }
-        //        }
+             stage('Performance Test') {
+                   steps {
+                       blazeMeterTest credentialsId: 'Blazemeter', testId: '9141486.taurus', workspaceId: '786908'
+                   }
+                }
                 stage('Slack Notification') {
                    steps {
                        slackSend channel: 'alerts', message: 'Deploy to Test was successful.'  
@@ -143,7 +143,7 @@ pipeline{
    
        }
        }
-     stage('Run Docker container on PROD Server') {
+     stage('Run Docker Image on PROD Server') {
              
             steps {
                 script {
