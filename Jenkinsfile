@@ -121,7 +121,8 @@ pipeline{
        
              stage('Performance Test') {
                    steps {
-                       blazeMeterTest credentialsId: 'Blazemeter', testId: '9148154.taurus', workspaceId: '788916'
+                       //blazeMeterTest credentialsId: 'Blazemeter', testId: '9148154.taurus', workspaceId: '788916'
+                       blazeMeterTest credentialsId: 'Blazemeter', testId: '9148224.taurus', workspaceId: '788916'
                    }
                 }
                 stage('Slack Notification') {
